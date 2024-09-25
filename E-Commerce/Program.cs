@@ -16,15 +16,20 @@ namespace DeeboStore
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<ApplicationDbContext>(options=> 
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             builder.Services.ConfigureApplicationCookie(options => {
                 options.LoginPath = $"/Identity/Account/Login";
                 options.LogoutPath = $"/Identity/Account/Logout";
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
             });
+            builder.Services.AddAuthentication().AddFacebook(options => {
+                options.AppId = "751468987094420";
+                options.AppSecret = "950725462dc0112ff1d3fb7915569541";
+
+                }); 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options => {
                 options.IdleTimeout = TimeSpan.FromMinutes(100);

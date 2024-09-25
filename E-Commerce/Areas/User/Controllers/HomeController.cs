@@ -1,5 +1,8 @@
 using DeeboStore.DataAccess.Repository.IRepository;
 using DeeboStore.Models;
+using DeeboStore.Utilities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -23,6 +26,7 @@ namespace E_Commerce.Areas.User.Controllers
 
         public IActionResult Index()
         {
+            
             IEnumerable<Product> products= _unitOfWork.Product.GetAll(includeProperties:"Category").ToList();
             return View(products);
         }
@@ -37,6 +41,7 @@ namespace E_Commerce.Areas.User.Controllers
             return View(cart);
         }
         [HttpPost]
+        [Authorize]
         public IActionResult Details(ShoppingCart shoppingCart)
         {
             var userId = _userManager.GetUserId(User);
@@ -48,15 +53,17 @@ namespace E_Commerce.Areas.User.Controllers
             {
                 cartfromdb.Count += shoppingCart.Count;
                 _unitOfWork.ShoppingCart.Update(cartfromdb);
+                _unitOfWork.Save();
             }
             else
             {
                 shoppingCart.Id = 0;
                 _unitOfWork.ShoppingCart.Create(shoppingCart);
+                _unitOfWork.Save();
+                HttpContext.Session.SetInt32(SD.SessionCart,
+                    _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count());
             }
             TempData["success"] = "Cart Updated Successfully";
-
-            _unitOfWork.Save();
             return RedirectToAction("Index");
         }
         public IActionResult Privacy()
