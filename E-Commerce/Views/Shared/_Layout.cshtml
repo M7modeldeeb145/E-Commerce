@@ -57,10 +57,10 @@
                             <a class="nav-link" asp-area="User" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="User" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="admin" asp-controller="Order" asp-action="Index">Manage Order</a>
                         </li>
-                        @* @if (User.IsInRole(SD.Role_Admin))
-                        { *@
+                         @if (User.IsInRole(SD.Role_Admin))
+                        {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Content Management
@@ -77,10 +77,10 @@
                                     </li>
                                 </ul>
                             </li>
-                        @* } *@
+                        } 
                         <li class="nav-item">
                             <a class="nav-link" asp-area="User" asp-controller="Cart" asp-action="Index">
-                                <i class="bi bi-cart"></i> &nbsp; (0)
+                                <i class="bi bi-cart"></i> &nbsp;
                             </a>
                         </li>
                     </ul>

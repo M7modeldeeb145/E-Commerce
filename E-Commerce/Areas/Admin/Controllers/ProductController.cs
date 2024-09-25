@@ -2,6 +2,8 @@
 using DeeboStore.DataAccess.Repository.IRepository;
 using DeeboStore.Models;
 using DeeboStore.Models.ViewModels;
+using DeeboStore.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 namespace E_Commerce.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private IUnitOfWork unitOfWork;

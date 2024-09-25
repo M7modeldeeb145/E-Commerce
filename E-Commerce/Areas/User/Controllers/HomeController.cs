@@ -1,5 +1,6 @@
 using DeeboStore.DataAccess.Repository.IRepository;
 using DeeboStore.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -11,11 +12,13 @@ namespace E_Commerce.Areas.User.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unitOfWork;
+        private UserManager<IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork)
+        public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -36,8 +39,7 @@ namespace E_Commerce.Areas.User.Controllers
         [HttpPost]
         public IActionResult Details(ShoppingCart shoppingCart)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userId = _userManager.GetUserId(User);
             shoppingCart.ApplicationUserId = userId;
 
             var cartfromdb = _unitOfWork.ShoppingCart.Get(u=>u.ApplicationUserId == userId&&

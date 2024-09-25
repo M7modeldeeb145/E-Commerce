@@ -11,5 +11,6 @@ namespace DeeboStore.DataAccess.Repository.IRepository
     {
         void Update(OrderHeader orderHeader);
         void UpdateStatus(int id,string orderstatus , string? paymentstatus = null);
+        void UpdateStripePaymentID(int id, string sessionId, string paymentIntentId);
     }
 }

@@ -34,5 +34,18 @@ namespace DeeboStore.DataAccess.Repository
                 }
             }
         }
+        public void UpdateStripePaymentID(int id, string sessionId, string paymentIntentId)
+        {
+            var orderFromDb = context.OrderHeaders.FirstOrDefault(u => u.Id == id);
+            if (!string.IsNullOrEmpty(sessionId))
+            {
+                orderFromDb.SessionId = sessionId;
+            }
+            if (!string.IsNullOrEmpty(paymentIntentId))
+            {
+                orderFromDb.PaymentIntentId = paymentIntentId;
+                orderFromDb.PaymentDate = DateTime.Now;
+            }
+        }
     }
 }
