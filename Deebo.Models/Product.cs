@@ -18,12 +18,11 @@ namespace DeeboStore.Models
         [Required]
         [Display(Name = "Price")]
         public double Price { get; set; }
-        public string? ImgURL { get; set; }
         public int CategoryId { get; set; }
         [ForeignKey("CategoryId")]
         [ValidateNever]
         public Category Category { get; set; }
-        //[ValidateNever]
-        //public List<ProductImage> ProductImages { get; set; }
+        [ValidateNever]
+        public List<ProductImage> ProductImages { get; set; }
     }
 }

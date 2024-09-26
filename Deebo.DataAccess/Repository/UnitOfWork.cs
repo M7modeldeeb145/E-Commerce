@@ -20,6 +20,7 @@ namespace DeeboStore.DataAccess.Repository
         public IOrderDetailRepository OrderDetail { get; private set; }
 
         public IOrderHeaderRepository OrderHeader {  get; private set; }
+        public IProductImageRepository ProductImage {  get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -31,6 +32,7 @@ namespace DeeboStore.DataAccess.Repository
             ApplicationUser = new ApplicationUserRepository(context);
             OrderDetail = new OrderDetailRepository(context);   
             OrderHeader = new OrderHeaderRepository(context);
+            ProductImage = new ProductImageRepository(context);
         }
         public void Save()
         {

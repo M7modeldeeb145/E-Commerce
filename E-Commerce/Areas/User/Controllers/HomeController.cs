@@ -26,15 +26,14 @@ namespace E_Commerce.Areas.User.Controllers
 
         public IActionResult Index()
         {
-            
-            IEnumerable<Product> products= _unitOfWork.Product.GetAll(includeProperties:"Category").ToList();
+            IEnumerable<Product> products= _unitOfWork.Product.GetAll(includeProperties: "Category,ProductImages");
             return View(products);
         }
         public IActionResult Details(int id)
         {
             var cart = new ShoppingCart()
             {
-                Product = _unitOfWork.Product.Get(u => u.Id == id, includeProperties: "Category"),
+                Product = _unitOfWork.Product.Get(u => u.Id == id, includeProperties: "Category,ProductImages"),
                 Count = 1,
                 ProductId = id
             };

@@ -28,10 +28,7 @@ namespace DeeboStore.DataAccess.Repository
                 objFromDb.ListPrice = product.ListPrice;
                 objFromDb.Description = product.Description;
                 objFromDb.CategoryId = product.CategoryId;
-                if (objFromDb.ImgURL != null)
-                {
-                    objFromDb.ImgURL = product.ImgURL;
-                }
+                objFromDb.ProductImages = product.ProductImages;
                 //objFromDb.ProductImages = obj.ProductImages;
             }
         }

@@ -10,17 +10,16 @@ using System.Threading.Tasks;
 
 namespace DeeboStore.DataAccess.Repository
 {
-    public class ApplicationUserRepository : Repository<ApplicationUser> , IApplicationUserRepository
+    public class ProductImageRepository : Repository<ProductImage> , IProductImageRepository
     {
         private readonly ApplicationDbContext context;
-        public ApplicationUserRepository(ApplicationDbContext context) : base(context)
+        public ProductImageRepository(ApplicationDbContext context) : base(context)
         {
             this.context = context;
         }
-
-        public void Update(ApplicationUser applicationUser)
+        public void Update(ProductImage image)
         {
-            context.ApplicationUsers.Update(applicationUser);
+            context.ProductImages.Update(image);
         }
     }
 }

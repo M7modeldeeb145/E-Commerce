@@ -14,18 +14,10 @@ namespace DeeboStore.DataAccess.Data
         public DbSet<ShoppingCart> ShoppingCarts { get; set; }
         public DbSet<OrderHeader> OrderHeaders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			// Fluent API configuration for ShoppingCart entity
-			modelBuilder.Entity<ShoppingCart>()
-				.Property(e => e.Id)
-				.ValueGeneratedOnAdd(); // Configures the ID property to be auto-generated
-
-			base.OnModelCreating(modelBuilder);
-		}
 	}
 }
