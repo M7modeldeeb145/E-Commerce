@@ -25,10 +25,14 @@ namespace E_Commerce.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
+
+
         public IActionResult Index(int orderId)
         {
             return View();
         }
+
+
         public IActionResult Details(int orderId)
         {
             orderVM = new()
@@ -38,6 +42,8 @@ namespace E_Commerce.Areas.Admin.Controllers
             };
             return View(orderVM);
         }
+
+
         [Authorize(Roles =SD.Role_Admin+","+SD.Role_Employee)]
         [HttpPost]
         public IActionResult UpdateOrderDetail()
@@ -63,6 +69,8 @@ namespace E_Commerce.Areas.Admin.Controllers
             TempData["Success"] = "Order Details Updated Successfully.";
             return RedirectToAction("Details", new {orderId = orderheaderfromdb.Id});
         }
+
+
 		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
 		[HttpPost]
 		public IActionResult StartProcessing()
@@ -73,6 +81,8 @@ namespace E_Commerce.Areas.Admin.Controllers
 			return RedirectToAction("Details", new { orderId = orderVM.OrderHeader.Id });
 
 		}
+
+
 		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
 		[HttpPost]
 		public IActionResult ShipOrder()
@@ -84,7 +94,7 @@ namespace E_Commerce.Areas.Admin.Controllers
 			orderHeader.ShippingDate = DateTime.Now;
 			if (orderHeader.PaymentStatus == SD.PaymentStatusDelayed)
 			{
-				orderHeader.PaymentDueDate = DateOnly.FromDateTime(DateTime.Now.AddDays(30));
+				orderHeader.PaymentDueDate = DateTime.Now.AddDays(30);
 			}
 			_unitOfWork.OrderHeader.UpdateStatus(orderVM.OrderHeader.Id, SD.StatusShipped);
             _unitOfWork.Save();
@@ -92,6 +102,8 @@ namespace E_Commerce.Areas.Admin.Controllers
 			return RedirectToAction("Details", new { orderId = orderVM.OrderHeader.Id });
 
 		}
+
+
 		[Authorize(Roles = SD.Role_Admin + "," + SD.Role_Employee)]
 		[HttpPost]
 		public IActionResult CancelOrder()
@@ -118,6 +130,8 @@ namespace E_Commerce.Areas.Admin.Controllers
 			TempData["Success"] = "Order Cancelled Successfully.";
 			return RedirectToAction(nameof(Details), new { orderId = orderVM.OrderHeader.Id });
 		}
+
+
 		[ActionName("Details")]
 		[HttpPost]
 		public IActionResult Details_PAY_NOW()
@@ -141,7 +155,7 @@ namespace E_Commerce.Areas.Admin.Controllers
 				{
 					PriceData = new SessionLineItemPriceDataOptions
 					{
-						UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
+						UnitAmount = (long)(item.Price * 100),
 						Currency = "usd",
 						ProductData = new SessionLineItemPriceDataProductDataOptions
 						{
@@ -159,6 +173,7 @@ namespace E_Commerce.Areas.Admin.Controllers
 			Response.Headers.Add("Location", session.Url);
 			return new StatusCodeResult(303);
 		}
+
 
 		public IActionResult PaymentConfirmation(int orderHeaderId)
 		{

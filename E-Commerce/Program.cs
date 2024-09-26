@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DeeboStore.Utilities;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using DeeboStore.DataAccess.DbIntializer;
 
 namespace DeeboStore
 {
@@ -18,6 +19,7 @@ namespace DeeboStore
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
             builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
             builder.Services.ConfigureApplicationCookie(options => {
@@ -36,6 +38,7 @@ namespace DeeboStore
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+            builder.Services.AddScoped<IDbInitializer,DbInitializer>();
             builder.Services.AddRazorPages();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -61,6 +64,8 @@ namespace DeeboStore
 
             app.UseSession();
 
+            SeedDatabase();
+
             app.MapRazorPages();
 
             app.MapControllerRoute(
@@ -68,6 +73,16 @@ namespace DeeboStore
                 pattern: "{area=User}/{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
+
+            void SeedDatabase()
+            {
+                using (var scope = app.Services.CreateScope())
+                {
+                    var dbbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
+                    dbbInitializer.Initialize();
+                }
+            }
         }
     }
 }

@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Deebo.Models\DeeboStore.Models.csproj" />
+    <ProjectReference Include="..\Deebo.Utilities\DeeboStore.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

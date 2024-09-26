@@ -112,41 +112,42 @@ namespace E_Commerce.Areas.User.Controllers
             if (applicationUser.CompanyId.GetValueOrDefault() == 0)
             {
                 //stripe logic
-                //var domain = Request.Scheme + "://" + Request.Host.Value + "/";
-                //var options = new SessionCreateOptions
-                //{
-                //    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
-                //    CancelUrl = domain + "customer/cart/index",
-                //    LineItems = new List<SessionLineItemOptions>(),
-                //    Mode = "payment",
-                //};
+                var domain = Request.Scheme + "://" + Request.Host.Value + "/";
+                var options = new SessionCreateOptions
+                {
+                    SuccessUrl = domain + $"customer/cart/OrderConfirmation?id={ShoppingCartVM.OrderHeader.Id}",
+                    CancelUrl = domain + "customer/cart/index",
+                    LineItems = new List<SessionLineItemOptions>(),
+                    Mode = "payment",
+                };
 
-                //foreach (var item in ShoppingCartVM.ShoppingCartList)
-                //{
-                //    var sessionLineItem = new SessionLineItemOptions
-                //    {
-                //        PriceData = new SessionLineItemPriceDataOptions
-                //        {
-                //            UnitAmount = (long)(item.Price * 100), // $20.50 => 2050
-                //            Currency = "usd",
-                //            ProductData = new SessionLineItemPriceDataProductDataOptions
-                //            {
-                //                Name = item.Product.Title
-                //            }
-                //        },
-                //        Quantity = item.Count
-                //    };
-                //    options.LineItems.Add(sessionLineItem);
-                //}
-                //var service = new SessionService();
-                //Session session = service.Create(options);
-                //_unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
-                //_unitOfWork.Save();
-                //Response.Headers.Add("Location", session.Url);
-                //return new StatusCodeResult(303);
+                foreach (var item in ShoppingCartVM.ShoppingCartList)
+                {
+                    var sessionLineItem = new SessionLineItemOptions
+                    {
+                        PriceData = new SessionLineItemPriceDataOptions
+                        {
+                            UnitAmount = (long)(item.Price * 100),
+                            Currency = "usd",
+                            ProductData = new SessionLineItemPriceDataProductDataOptions
+                            {
+                                Name = item.Product.Title
+                            }
+                        },
+                        Quantity = item.Count
+                    };
+                    options.LineItems.Add(sessionLineItem);
+                }
+                var service = new SessionService();
+                Session session = service.Create(options);
+                _unitOfWork.OrderHeader.UpdateStripePaymentID(ShoppingCartVM.OrderHeader.Id, session.Id, session.PaymentIntentId);
+                _unitOfWork.Save();
+                Response.Headers.Add("Location", session.Url);
+                return new StatusCodeResult(303);
             }
             return RedirectToAction(nameof(OrderConfirmation),new {id=ShoppingCartVM.OrderHeader.Id});
         }
+
         public IActionResult OrderConfirmation(int id)
         {
             OrderHeader orderHeader = _unitOfWork.OrderHeader.Get(u => u.Id == id, includeProperties: "ApplicationUser");
@@ -165,18 +166,15 @@ namespace E_Commerce.Areas.User.Controllers
                 }
                 HttpContext.Session.Clear();
             }
-
-            //_emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, "New Order - Bulky Book",
-            //    $"<p>New Order Created - {orderHeader.Id}</p>");
-
+            _emailSender.SendEmailAsync(orderHeader.ApplicationUser.Email, "New Order - Bulky Book",
+                $"<p>New Order Created - {orderHeader.Id}</p>");
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart
                 .GetAll(u => u.ApplicationUserId == orderHeader.ApplicationUserId).ToList();
-
             _unitOfWork.ShoppingCart.RemoveRange(shoppingCarts);
             _unitOfWork.Save();
-
             return View(id);
         }
+
         public IActionResult Plus(int cartId)
         {
             var cartfromdb = _unitOfWork.ShoppingCart.Get(u => u.Id == cartId,tracked:true);
@@ -185,6 +183,7 @@ namespace E_Commerce.Areas.User.Controllers
             _unitOfWork.Save();
             return RedirectToAction("Index");
         }
+
         public IActionResult Minus(int cartId)
         {
             var cartfromdb = _unitOfWork.ShoppingCart.Get(u => u.Id == cartId);
@@ -202,15 +201,15 @@ namespace E_Commerce.Areas.User.Controllers
             _unitOfWork.Save();
             return RedirectToAction("Index");
         }
+
         public IActionResult Remove(int cartId)
         {
-            var cartfromdb = _unitOfWork.ShoppingCart.Get(u => u.Id == cartId, tracked:true);
-
+            var cartfromdb = _unitOfWork.ShoppingCart.
+                Get(u => u.Id == cartId, tracked:true);
             HttpContext.Session.SetInt32(SD.SessionCart,
                  _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == cartfromdb.ApplicationUserId).Count() - 1);
             _unitOfWork.ShoppingCart.Remove(cartfromdb);
             _unitOfWork.Save();
-           
             return RedirectToAction("Index");
         }
     }
